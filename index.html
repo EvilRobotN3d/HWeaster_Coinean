@@ -93,12 +93,38 @@
   var SPEED = 42;    // milliseconds per character
   var PAUSE = 1.0;   // multiplier on every silence between lines
 
+  /* audio/visual sync. positive = hold the image back, negative = hold the sound back.
+     leave at 0 unless your wav has silence baked into the front of it. */
+  var AV_OFFSET = 0;
+
   var a=document.getElementById('a'),b=document.getElementById('b'),c=document.getElementById('c'),
       gate=document.getElementById('gate'),deny=document.getElementById('deny'),
       o=document.getElementById('o'),img=document.getElementById('scare');
 
-  var snd=new Audio('scare.wav'); snd.preload='auto'; snd.volume=1.0;
   var imgOK=true; img.onerror=function(){imgOK=false;};
+
+  /* Web Audio: decode once, fire with near-zero latency.
+     An <audio> element has to seek and spin up on every play() - that is the
+     half-second lag. Falls back to <audio> if decoding is unavailable. */
+  var AC=window.AudioContext||window.webkitAudioContext, actx=null, buf=null;
+  var fallback=new Audio('scare.wav'); fallback.preload='auto'; fallback.volume=1.0;
+  if(AC){
+    try{
+      actx=new AC();
+      fetch('scare.wav').then(function(r){return r.arrayBuffer();})
+        .then(function(ab){return actx.decodeAudioData(ab);})
+        .then(function(d){buf=d;})
+        .catch(function(){buf=null;});
+    }catch(e){actx=null;}
+  }
+  function boom(){
+    if(actx&&buf){
+      var src=actx.createBufferSource();
+      src.buffer=buf; src.connect(actx.destination); src.start(0);
+      return;
+    }
+    try{fallback.currentTime=0;fallback.play().catch(function(){});}catch(e){}
+  }
 
   function hop(el,next){el.addEventListener('input',function(){
     el.value=el.value.replace(/\D/g,'');
@@ -113,7 +139,8 @@
       return;
     }
     /* we are inside a real click/keypress, so audio is unlocked here */
-    snd.play().then(function(){snd.pause();snd.currentTime=0;}).catch(function(){});
+    if(actx&&actx.state==='suspended')actx.resume();
+    fallback.play().then(function(){fallback.pause();fallback.currentTime=0;}).catch(function(){});
     gate.style.display='none';
     o.style.display='block';
     run(LOCK);
@@ -181,9 +208,13 @@
     function TITLE(t){return function(){document.title=t;return Promise.resolve();}}
 
     function bang(){
-      try{snd.currentTime=0;snd.play().catch(function(){});}catch(e){}
-      if(imgOK){img.style.display='block';img.className='bang';}
-      setTimeout(function(){img.style.display='none';img.className='';},1700);
+      function flash(){
+        if(imgOK){img.style.display='block';img.className='bang';}
+        setTimeout(function(){img.style.display='none';img.className='';},1700);
+      }
+      if(AV_OFFSET>0){ boom(); setTimeout(flash,AV_OFFSET); }
+      else if(AV_OFFSET<0){ flash(); setTimeout(boom,-AV_OFFSET); }
+      else { boom(); flash(); }
     }
 
     [
