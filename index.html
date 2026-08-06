@@ -42,7 +42,7 @@
   @keyframes b{0%,49%{opacity:1}50%,100%{opacity:0}}
   /* ---------- scare ---------- */
   #scare{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:9999;display:none;background:#000;}
-  .shake{animation:sh .07s linear infinite;}
+  .bang{animation:sh .06s linear infinite, fk .11s steps(1) infinite;}
   @keyframes sh{
     0%{transform:translate(6px,-8px) scale(1.06) rotate(.6deg)}
     25%{transform:translate(-9px,5px) scale(1.09) rotate(-.8deg)}
@@ -50,7 +50,6 @@
     75%{transform:translate(-6px,-6px) scale(1.10) rotate(-.5deg)}
     100%{transform:translate(5px,7px) scale(1.06) rotate(.7deg)}
   }
-  .flick{animation:fk .11s steps(1) infinite;}
   @keyframes fk{0%{opacity:1}40%{opacity:.15}55%{opacity:1}80%{opacity:.45}100%{opacity:1}}
   @media (max-width:600px){
     body{font-size:14px;}
@@ -90,6 +89,10 @@
   var ENTRY = "1987-44-108";
   var LOCK  = "SET-YOUR-CODE";
 
+  /* pacing - raise either number to slow it down further */
+  var SPEED = 42;    // milliseconds per character
+  var PAUSE = 1.0;   // multiplier on every silence between lines
+
   var a=document.getElementById('a'),b=document.getElementById('b'),c=document.getElementById('c'),
       gate=document.getElementById('gate'),deny=document.getElementById('deny'),
       o=document.getElementById('o'),img=document.getElementById('scare');
@@ -122,8 +125,11 @@
   /* ---------------- the sequence ---------------- */
   function run(LOCK){
     var skip=false;
-    document.addEventListener('click',function(){skip=true;});
-    document.addEventListener('keydown',function(){skip=true;});
+    // attach AFTER this click finishes bubbling, or it skips the whole thing instantly
+    setTimeout(function(){
+      document.addEventListener('click',function(){skip=true;});
+      document.addEventListener('keydown',function(){skip=true;});
+    },600);
     var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var start=Date.now();
 
@@ -135,7 +141,10 @@
     }
     function elapsed(){return Math.max(1,Math.round((Date.now()-start)/1000));}
 
+    var cur=document.createElement('span');cur.className='cur';o.appendChild(cur);
+
     function wait(ms){return new Promise(function(r){
+      ms=Math.round(ms*PAUSE);
       if(reduce)ms=Math.min(ms,200);
       var t=setInterval(function(){if(skip){clearInterval(t);r();}},60);
       setTimeout(function(){clearInterval(t);r();},ms);
@@ -145,22 +154,24 @@
       return new Promise(function(res){
         var s=document.createElement('span');
         if(cls)s.className=cls;
+        o.insertBefore(s,cur);           // live in the DOM, so the cursor walks with it
         if(reduce){s.textContent=txt;return res(s);}
         var i=0;
         (function step(){
           if(skip){s.textContent=txt;return res(s);}
           s.textContent=txt.slice(0,++i);
           if(i>=txt.length)return res(s);
-          var d=speed||46, ch=txt.charAt(i-1);
-          if(ch==='.'||ch===','||ch==='?')d+=380;
-          setTimeout(step,d+Math.random()*34);
+          var d=speed||SPEED, ch=txt.charAt(i-1);
+          if(ch==='.'||ch==='?')d+=430;
+          else if(ch===','||ch===';')d+=210;
+          setTimeout(step,d+Math.random()*46);
         })();
       });
     }
 
-    var cur=document.createElement('span');cur.className='cur';o.appendChild(cur);
+
     function br(n){for(var i=0;i<(n||1);i++)o.insertBefore(document.createTextNode('\n'),cur);}
-    function T(t,cl,sp){return function(){return type(t,cl,sp).then(function(s){o.insertBefore(s,cur);});}}
+    function T(t,cl,sp){return function(){return type(t,cl,sp);}}
     function W(ms){return function(){return wait(ms);}}
     function B(n){return function(){br(n);return Promise.resolve();}}
     function L(fn){return function(){
@@ -171,8 +182,8 @@
 
     function bang(){
       try{snd.currentTime=0;snd.play().catch(function(){});}catch(e){}
-      if(imgOK){img.style.display='block';img.className='shake flick';}
-      setTimeout(function(){img.style.display='none';img.className='';},1450);
+      if(imgOK){img.style.display='block';img.className='bang';}
+      setTimeout(function(){img.style.display='none';img.className='';},1700);
     }
 
     [
