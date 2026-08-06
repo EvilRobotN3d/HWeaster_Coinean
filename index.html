@@ -9,7 +9,7 @@
   html,body{background:#000;margin:0;padding:0;min-height:100vh;}
   body{
     font-family:"Courier New",Courier,monospace;
-    color:#585c53;font-size:17px;line-height:2.35;
+    color:#585c53;font-size:17px;line-height:1.7;
     display:flex;align-items:center;justify-content:center;
     padding:8vh 20px;box-sizing:border-box;
   }
@@ -95,7 +95,7 @@
 
   /* audio/visual sync. positive = hold the image back, negative = hold the sound back.
      leave at 0 unless your wav has silence baked into the front of it. */
-  var AV_OFFSET = 0;
+  var AV_OFFSET = 900;
 
   /* follow the text down the page as it types. set false to leave scrolling alone. */
   var FOLLOW = true;
@@ -231,35 +231,37 @@
 
     [
       W(4200),
-      T('you finished the sentence.'), B(2), W(2600),
+      T('you brought the numbers together.'), B(2), W(2600),
+      T('you should not have done that.'), B(1), W(1000),
       T('nineteen eighty-seven.'), B(1), W(700),
       T('forty-four.'), B(1), W(700),
-      T('one hundred and eight.'), B(2), W(3400),
+      T('one hundred and eight.'), B(2), W(2600),
 
       T('three people were told to keep those to themselves.'), B(1), W(900),
       T('all three of them wrote it down where it could be found.'), B(2), W(1600),
-      T('i saw to that.','dim'), B(2), W(3800),
+      T('i saw to that.','dim'), B(2), W(3000),
 
       T('a caption that says five'), B(1), W(500),
       T('was written by somebody who counted six'), B(1), W(500),
       T('and wanted to sleep that night.','dim'), B(2), W(4200),
 
       T('it is '), L(clock), T(' where you are.'), B(1), W(2200),
-      T('you have been in this room for '), L(elapsed), T(' seconds.'), B(1), W(1800),
-      T('i have been in it for four hundred and twenty-two years.','dim'), B(2),
-      TITLE('  '), W(5200),
+      T('you have been in here for '), L(elapsed), T(' seconds.'), B(1), W(1800),
+      T('i have been here for four hundred and twenty-two years.','dim'), B(2),
+      TITLE('  '), W(4800),
 
-      T('take them. the baskets were always going to be yours.'), B(1), W(2400),
+      T('every year I take the baskets and hide them.'), B(1), W(2400),
       T('the baskets are not what i came for.','warn'), B(1), W(3600),
 
       function(){
         var s=document.createElement('span');s.id='code';s.textContent=LOCK;
         o.insertBefore(s,cur);keep();return Promise.resolve();
       },
-      W(9500),
+      W(2500),
 
-      T('go on. close it.','dim'), B(1), W(2800),
+      T('just remember.','dim'), B(1), W(2800),
       T('i am not in the page.','lit'), B(2), W(2000),
+      T('i am coming to find you.','lit'), B(2), W(2000),
       TITLE('still counting'),
       function(){cur.style.display='none';return Promise.resolve();},
       W(2600),
