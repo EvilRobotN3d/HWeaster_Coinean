@@ -9,7 +9,7 @@
   html,body{background:#000;margin:0;padding:0;min-height:100vh;}
   body{
     font-family:"Courier New",Courier,monospace;
-    color:#585c53;font-size:17px;line-height:1.8;
+    color:#585c53;font-size:17px;line-height:2.35;
     display:flex;align-items:center;justify-content:center;
     padding:8vh 20px;box-sizing:border-box;
   }
@@ -95,7 +95,10 @@
 
   /* audio/visual sync. positive = hold the image back, negative = hold the sound back.
      leave at 0 unless your wav has silence baked into the front of it. */
-  var AV_OFFSET = 900;
+  var AV_OFFSET = 0;
+
+  /* follow the text down the page as it types. set false to leave scrolling alone. */
+  var FOLLOW = true;
 
   var a=document.getElementById('a'),b=document.getElementById('b'),c=document.getElementById('c'),
       gate=document.getElementById('gate'),deny=document.getElementById('deny'),
@@ -143,6 +146,7 @@
     fallback.play().then(function(){fallback.pause();fallback.currentTime=0;}).catch(function(){});
     gate.style.display='none';
     o.style.display='block';
+    if(FOLLOW)document.body.style.alignItems='flex-start';
     run(LOCK);
   }
   document.getElementById('go').addEventListener('click',attempt);
@@ -170,6 +174,13 @@
 
     var cur=document.createElement('span');cur.className='cur';o.appendChild(cur);
 
+    /* nudge the page so the cursor never drops below ~72% of the viewport */
+    function keep(){
+      if(!FOLLOW)return;
+      var r=cur.getBoundingClientRect(), edge=window.innerHeight*0.72;
+      if(r.bottom>edge)window.scrollBy(0,r.bottom-edge);
+    }
+
     function wait(ms){return new Promise(function(r){
       ms=Math.round(ms*PAUSE);
       if(reduce)ms=Math.min(ms,200);
@@ -185,8 +196,9 @@
         if(reduce){s.textContent=txt;return res(s);}
         var i=0;
         (function step(){
-          if(skip){s.textContent=txt;return res(s);}
+          if(skip){s.textContent=txt;keep();return res(s);}
           s.textContent=txt.slice(0,++i);
+          keep();
           if(i>=txt.length)return res(s);
           var d=speed||SPEED, ch=txt.charAt(i-1);
           if(ch==='.'||ch==='?')d+=430;
@@ -197,13 +209,13 @@
     }
 
 
-    function br(n){for(var i=0;i<(n||1);i++)o.insertBefore(document.createTextNode('\n'),cur);}
+    function br(n){for(var i=0;i<(n||1);i++)o.insertBefore(document.createTextNode('\n'),cur);keep();}
     function T(t,cl,sp){return function(){return type(t,cl,sp);}}
     function W(ms){return function(){return wait(ms);}}
     function B(n){return function(){br(n);return Promise.resolve();}}
     function L(fn){return function(){
       var s=document.createElement('span');s.className='lit';s.textContent=fn();
-      o.insertBefore(s,cur);setInterval(function(){s.textContent=fn();},1000);
+      o.insertBefore(s,cur);keep();setInterval(function(){s.textContent=fn();},1000);
       return Promise.resolve();};}
     function TITLE(t){return function(){document.title=t;return Promise.resolve();}}
 
@@ -219,7 +231,7 @@
 
     [
       W(4200),
-      T('you brought the numbers together.'), B(2), W(2600),
+      T('you finished the sentence.'), B(2), W(2600),
       T('nineteen eighty-seven.'), B(1), W(700),
       T('forty-four.'), B(1), W(700),
       T('one hundred and eight.'), B(2), W(3400),
@@ -237,14 +249,17 @@
       T('i have been in it for four hundred and twenty-two years.','dim'), B(2),
       TITLE('  '), W(5200),
 
-      T('every year i take the baskets.'), B(1), W(2400),
+      T('take them. the baskets were always going to be yours.'), B(1), W(2400),
       T('the baskets are not what i came for.','warn'), B(1), W(3600),
 
       function(){
         var s=document.createElement('span');s.id='code';s.textContent=LOCK;
-        o.insertBefore(s,cur);return Promise.resolve();
+        o.insertBefore(s,cur);keep();return Promise.resolve();
       },
+      W(9500),
 
+      T('go on. close it.','dim'), B(1), W(2800),
+      T('i am not in the page.','lit'), B(2), W(2000),
       TITLE('still counting'),
       function(){cur.style.display='none';return Promise.resolve();},
       W(2600),
