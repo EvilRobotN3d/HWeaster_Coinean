@@ -7,46 +7,64 @@
 <meta name="robots" content="noindex, nofollow">
 <style>
   html, body {
-    background: #000;
-    color: #5c5f57;
+    background: #000; margin: 0; padding: 0; min-height: 100vh;
     font-family: "Courier New", Courier, monospace;
-    font-size: 16px;
-    line-height: 2.4;
-    margin: 0; padding: 0; min-height: 100%;
+    display: flex; align-items: center; justify-content: center;
   }
-  #v { max-width: 560px; margin: 0 auto; padding: 22vh 22px 30vh 22px; white-space: pre-wrap; }
-  .pale { color: #3a3d37; }
-  .lit { color: #b9bdb2; }
-  .code { color: #e4e7dc; font-size: 30px; letter-spacing: 10px; line-height: 1.6; display: block; padding: 26px 0 4px 0; }
-  .last { padding-top: 16vh; display: block; color: #33362f; }
-  @media (max-width: 620px) { body { font-size: 14px; } .code { font-size: 22px; letter-spacing: 6px; } }
+  #gate { text-align: center; padding: 30px 18px; }
+  .row { display: flex; align-items: center; justify-content: center; gap: 10px; }
+  input {
+    background: transparent; border: none;
+    border-bottom: 2px solid #2a2c28;
+    color: #cfd3c8; font-family: inherit; font-size: 30px;
+    text-align: center; letter-spacing: 9px; padding: 4px 0 6px 4px;
+    outline: none; caret-color: #6b7065;
+  }
+  input:focus { border-bottom-color: #5c6157; }
+  #a { width: 132px; } #b { width: 74px; } #c { width: 104px; }
+  .dash { color: #3a3d37; font-size: 28px; padding-bottom: 6px; }
+  #go {
+    margin-top: 52px; background: transparent;
+    border: 1px solid #2a2c28; color: #6b7065;
+    font-family: inherit; font-size: 14px; letter-spacing: 6px;
+    padding: 11px 30px; cursor: pointer; text-transform: uppercase;
+  }
+  #go:hover, #go:focus { color: #cfd3c8; border-color: #5c6157; outline: none; }
+  @media (max-width: 560px) {
+    input { font-size: 21px; letter-spacing: 6px; }
+    #a { width: 92px; } #b { width: 52px; } #c { width: 72px; }
+    .dash { font-size: 20px; }
+  }
 </style>
 </head>
 <body>
-<div id="v">you filled it in.
-
-<span class="pale">he asked you not to. he asks everyone.</span>
-
-there were six in that field.
-the caption said five.
-
-<span class="pale">a caption is written by someone
-who would like to sleep afterward.</span>
-
-i have been counted many times.
-i have never been counted <span class="lit">correctly</span>.
-
-<span class="lit">until now.</span>
-
-so. the last lock.
-
-<span class="code">[[FINAL-CODE]]</span>
-
-take what is yours. it was always going to be given.
-
-<span class="last">close this page.
-i can tell how long you look at it,
-and you are all still looking.</span>
+<div id="gate">
+  <div class="row">
+    <input id="a" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="____" aria-label="first">
+    <span class="dash">-</span>
+    <input id="b" maxlength="2" inputmode="numeric" autocomplete="off" placeholder="__" aria-label="second">
+    <span class="dash">-</span>
+    <input id="c" maxlength="3" inputmode="numeric" autocomplete="off" placeholder="___" aria-label="third">
+  </div>
+  <button id="go">Enter</button>
 </div>
+<script>
+(function(){
+  var P="575c5945035c40405d";
+  var a=document.getElementById('a'),b=document.getElementById('b'),c=document.getElementById('c');
+  function hop(el,next){el.addEventListener('input',function(){
+    el.value=el.value.replace(/\D/g,'');
+    if(next&&el.value.length>=el.maxLength)next.focus();});}
+  hop(a,b);hop(b,c);hop(c,null);
+  function go(){
+    var k=a.value+'-'+b.value+'-'+c.value,o='';
+    for(var i=0;i<P.length;i+=2)o+=String.fromCharCode(parseInt(P.substr(i,2),16)^k.charCodeAt((i/2)%k.length));
+    location.href=/^[a-z0-9._-]+$/.test(o)?o:'no.html';
+  }
+  document.getElementById('go').addEventListener('click',go);
+  [a,b,c].forEach(function(el){el.addEventListener('keydown',function(e){if(e.key==='Enter')go();});});
+  a.focus();
+})();
+</script>
 </body>
 </html>
