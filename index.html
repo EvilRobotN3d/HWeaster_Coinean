@@ -3,67 +3,215 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>&nbsp;</title>
+<title> </title>
 <meta name="robots" content="noindex, nofollow">
 <style>
-  html, body {
-    background: #000; margin: 0; padding: 0; min-height: 100vh;
-    font-family: "Courier New", Courier, monospace;
-    display: flex; align-items: center; justify-content: center;
+  html,body{background:#000;margin:0;padding:0;min-height:100vh;}
+  body{
+    font-family:"Courier New",Courier,monospace;
+    color:#585c53;font-size:17px;line-height:2.35;
+    display:flex;align-items:center;justify-content:center;
+    padding:8vh 20px;box-sizing:border-box;
   }
-  #gate { text-align: center; padding: 30px 18px; }
-  .row { display: flex; align-items: center; justify-content: center; gap: 10px; }
-  input {
-    background: transparent; border: none;
-    border-bottom: 2px solid #2a2c28;
-    color: #cfd3c8; font-family: inherit; font-size: 30px;
-    text-align: center; letter-spacing: 9px; padding: 4px 0 6px 4px;
-    outline: none; caret-color: #6b7065;
+  #wrap{max-width:560px;width:100%;}
+  /* ---------- gate ---------- */
+  #gate{text-align:center;}
+  #gate .row{display:flex;align-items:center;justify-content:center;gap:10px;}
+  #gate input{
+    background:transparent;border:none;border-bottom:2px solid #2a2c28;
+    color:#cfd3c8;font-family:inherit;font-size:30px;text-align:center;
+    letter-spacing:9px;padding:4px 0 6px 4px;outline:none;caret-color:#6b7065;
   }
-  input:focus { border-bottom-color: #5c6157; }
-  #a { width: 132px; } #b { width: 74px; } #c { width: 104px; }
-  .dash { color: #3a3d37; font-size: 28px; padding-bottom: 6px; }
-  #go {
-    margin-top: 52px; background: transparent;
-    border: 1px solid #2a2c28; color: #6b7065;
-    font-family: inherit; font-size: 14px; letter-spacing: 6px;
-    padding: 11px 30px; cursor: pointer; text-transform: uppercase;
+  #gate input:focus{border-bottom-color:#5c6157;}
+  #a{width:132px;}#b{width:74px;}#c{width:104px;}
+  .dash{color:#3a3d37;font-size:28px;padding-bottom:6px;}
+  #go{
+    margin-top:52px;background:transparent;border:1px solid #2a2c28;color:#6b7065;
+    font-family:inherit;font-size:14px;letter-spacing:6px;padding:11px 30px;
+    cursor:pointer;text-transform:uppercase;
   }
-  #go:hover, #go:focus { color: #cfd3c8; border-color: #5c6157; outline: none; }
-  @media (max-width: 560px) {
-    input { font-size: 21px; letter-spacing: 6px; }
-    #a { width: 92px; } #b { width: 52px; } #c { width: 72px; }
-    .dash { font-size: 20px; }
+  #go:hover,#go:focus{color:#cfd3c8;border-color:#5c6157;outline:none;}
+  #deny{color:#6a4a4a;min-height:2.4em;padding-top:26px;line-height:1.9;font-size:14px;}
+  /* ---------- payload ---------- */
+  #o{display:none;white-space:pre-wrap;}
+  .dim{color:#2f322d;}
+  .lit{color:#c3c7bb;}
+  .warn{color:#8a5f5f;}
+  #code{color:#eef1e6;font-size:34px;letter-spacing:12px;display:block;padding:34px 0 8px 0;line-height:1.5;}
+  .cur{display:inline-block;width:9px;height:19px;background:#5c6157;vertical-align:-3px;animation:b 1.05s step-end infinite;}
+  @keyframes b{0%,49%{opacity:1}50%,100%{opacity:0}}
+  /* ---------- scare ---------- */
+  #scare{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:9999;display:none;background:#000;}
+  .shake{animation:sh .07s linear infinite;}
+  @keyframes sh{
+    0%{transform:translate(6px,-8px) scale(1.06) rotate(.6deg)}
+    25%{transform:translate(-9px,5px) scale(1.09) rotate(-.8deg)}
+    50%{transform:translate(7px,9px) scale(1.05) rotate(.4deg)}
+    75%{transform:translate(-6px,-6px) scale(1.10) rotate(-.5deg)}
+    100%{transform:translate(5px,7px) scale(1.06) rotate(.7deg)}
   }
+  .flick{animation:fk .11s steps(1) infinite;}
+  @keyframes fk{0%{opacity:1}40%{opacity:.15}55%{opacity:1}80%{opacity:.45}100%{opacity:1}}
+  @media (max-width:600px){
+    body{font-size:14px;}
+    #code{font-size:23px;letter-spacing:7px;}
+    #gate input{font-size:21px;letter-spacing:6px;}
+    #a{width:92px;}#b{width:52px;}#c{width:72px;}
+    .dash{font-size:20px;}
+  }
+  @media (prefers-reduced-motion:reduce){.cur{animation:none;}}
 </style>
 </head>
 <body>
-<div id="gate">
-  <div class="row">
-    <input id="a" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="____" aria-label="first">
-    <span class="dash">-</span>
-    <input id="b" maxlength="2" inputmode="numeric" autocomplete="off" placeholder="__" aria-label="second">
-    <span class="dash">-</span>
-    <input id="c" maxlength="3" inputmode="numeric" autocomplete="off" placeholder="___" aria-label="third">
+<div id="wrap">
+  <div id="gate">
+    <div class="row">
+      <input id="a" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="____" aria-label="first">
+      <span class="dash">-</span>
+      <input id="b" maxlength="2" inputmode="numeric" autocomplete="off" placeholder="__" aria-label="second">
+      <span class="dash">-</span>
+      <input id="c" maxlength="3" inputmode="numeric" autocomplete="off" placeholder="___" aria-label="third">
+    </div>
+    <button id="go">Enter</button>
+    <div id="deny"></div>
   </div>
-  <button id="go">Enter</button>
+  <div id="o"></div>
 </div>
+<img id="scare" src="scare.png" alt="">
+
 <script>
 (function(){
-  var P="575c5945035c40405d";
-  var a=document.getElementById('a'),b=document.getElementById('b'),c=document.getElementById('c');
+
+  /* ============================================================
+     EDIT THESE TWO LINES.
+       ENTRY = what the kids type in, collected from the 3 sites
+       LOCK  = your real basket combination, revealed at the end
+     ============================================================ */
+  var ENTRY = "1987-44-108";
+  var LOCK  = "SET-YOUR-CODE";
+
+  var a=document.getElementById('a'),b=document.getElementById('b'),c=document.getElementById('c'),
+      gate=document.getElementById('gate'),deny=document.getElementById('deny'),
+      o=document.getElementById('o'),img=document.getElementById('scare');
+
+  var snd=new Audio('scare.wav'); snd.preload='auto'; snd.volume=1.0;
+  var imgOK=true; img.onerror=function(){imgOK=false;};
+
   function hop(el,next){el.addEventListener('input',function(){
     el.value=el.value.replace(/\D/g,'');
     if(next&&el.value.length>=el.maxLength)next.focus();});}
   hop(a,b);hop(b,c);hop(c,null);
-  function go(){
-    var k=a.value+'-'+b.value+'-'+c.value,o='';
-    for(var i=0;i<P.length;i+=2)o+=String.fromCharCode(parseInt(P.substr(i,2),16)^k.charCodeAt((i/2)%k.length));
-    location.href=/^[a-z0-9._-]+$/.test(o)?o:'no.html';
+
+  function attempt(){
+    if(!a.value||!b.value||!c.value)return;
+    if(a.value+'-'+b.value+'-'+c.value!==ENTRY){
+      deny.textContent='that is not the number.\ncount again. i can wait.';
+      a.value='';b.value='';c.value='';a.focus();
+      return;
+    }
+    /* we are inside a real click/keypress, so audio is unlocked here */
+    snd.play().then(function(){snd.pause();snd.currentTime=0;}).catch(function(){});
+    gate.style.display='none';
+    o.style.display='block';
+    run(LOCK);
   }
-  document.getElementById('go').addEventListener('click',go);
-  [a,b,c].forEach(function(el){el.addEventListener('keydown',function(e){if(e.key==='Enter')go();});});
+  document.getElementById('go').addEventListener('click',attempt);
+  [a,b,c].forEach(function(el){el.addEventListener('keydown',function(e){if(e.key==='Enter')attempt();});});
   a.focus();
+
+  /* ---------------- the sequence ---------------- */
+  function run(LOCK){
+    var skip=false;
+    document.addEventListener('click',function(){skip=true;});
+    document.addEventListener('keydown',function(){skip=true;});
+    var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var start=Date.now();
+
+    function clock(){
+      var d=new Date(),h=d.getHours(),m=d.getMinutes();
+      var ap=h<12?'in the morning':(h<18?'in the afternoon':'at night');
+      h=h%12; if(h===0)h=12;
+      return h+':'+(m<10?'0':'')+m+' '+ap;
+    }
+    function elapsed(){return Math.max(1,Math.round((Date.now()-start)/1000));}
+
+    function wait(ms){return new Promise(function(r){
+      if(reduce)ms=Math.min(ms,200);
+      var t=setInterval(function(){if(skip){clearInterval(t);r();}},60);
+      setTimeout(function(){clearInterval(t);r();},ms);
+    });}
+
+    function type(txt,cls,speed){
+      return new Promise(function(res){
+        var s=document.createElement('span');
+        if(cls)s.className=cls;
+        if(reduce){s.textContent=txt;return res(s);}
+        var i=0;
+        (function step(){
+          if(skip){s.textContent=txt;return res(s);}
+          s.textContent=txt.slice(0,++i);
+          if(i>=txt.length)return res(s);
+          var d=speed||46, ch=txt.charAt(i-1);
+          if(ch==='.'||ch===','||ch==='?')d+=380;
+          setTimeout(step,d+Math.random()*34);
+        })();
+      });
+    }
+
+    var cur=document.createElement('span');cur.className='cur';o.appendChild(cur);
+    function br(n){for(var i=0;i<(n||1);i++)o.insertBefore(document.createTextNode('\n'),cur);}
+    function T(t,cl,sp){return function(){return type(t,cl,sp).then(function(s){o.insertBefore(s,cur);});}}
+    function W(ms){return function(){return wait(ms);}}
+    function B(n){return function(){br(n);return Promise.resolve();}}
+    function L(fn){return function(){
+      var s=document.createElement('span');s.className='lit';s.textContent=fn();
+      o.insertBefore(s,cur);setInterval(function(){s.textContent=fn();},1000);
+      return Promise.resolve();};}
+    function TITLE(t){return function(){document.title=t;return Promise.resolve();}}
+
+    function bang(){
+      try{snd.currentTime=0;snd.play().catch(function(){});}catch(e){}
+      if(imgOK){img.style.display='block';img.className='shake flick';}
+      setTimeout(function(){img.style.display='none';img.className='';},1450);
+    }
+
+    [
+      W(4200),
+      T('you finished the sentence.'), B(2), W(2600),
+      T('nineteen eighty-seven.'), B(1), W(700),
+      T('forty-four.'), B(1), W(700),
+      T('one hundred and eight.'), B(2), W(3400),
+
+      T('three people were told to keep those to themselves.'), B(1), W(900),
+      T('all three of them wrote it down where it could be found.'), B(2), W(1600),
+      T('i saw to that.','dim'), B(2), W(3800),
+
+      T('a caption that says five'), B(1), W(500),
+      T('was written by somebody who counted six'), B(1), W(500),
+      T('and wanted to sleep that night.','dim'), B(2), W(4200),
+
+      T('it is '), L(clock), T(' where you are.'), B(1), W(2200),
+      T('you have been in this room for '), L(elapsed), T(' seconds.'), B(1), W(1800),
+      T('i have been in it for four hundred and twenty-two years.','dim'), B(2),
+      TITLE('  '), W(5200),
+
+      T('take them. the baskets were always going to be yours.'), B(1), W(2400),
+      T('the baskets are not what i came for.','warn'), B(1), W(3600),
+
+      function(){
+        var s=document.createElement('span');s.id='code';s.textContent=LOCK;
+        o.insertBefore(s,cur);return Promise.resolve();
+      },
+      W(9500),
+
+      T('go on. close it.','dim'), B(1), W(2800),
+      T('i am not in the page.','lit'), B(2), W(2000),
+      TITLE('still counting'),
+      function(){cur.style.display='none';return Promise.resolve();},
+      W(2600),
+      function(){bang();return Promise.resolve();}
+    ].reduce(function(p,f){return p.then(f);},Promise.resolve());
+  }
 })();
 </script>
 </body>
