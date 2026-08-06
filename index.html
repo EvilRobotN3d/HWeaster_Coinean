@@ -95,7 +95,7 @@
 
   /* audio/visual sync. positive = hold the image back, negative = hold the sound back.
      leave at 0 unless your wav has silence baked into the front of it. */
-  var AV_OFFSET = 0;
+  var AV_OFFSET = 60;
 
   var a=document.getElementById('a'),b=document.getElementById('b'),c=document.getElementById('c'),
       gate=document.getElementById('gate'),deny=document.getElementById('deny'),
@@ -244,7 +244,6 @@
         var s=document.createElement('span');s.id='code';s.textContent=LOCK;
         o.insertBefore(s,cur);return Promise.resolve();
       },
-      W(9500),
 
       TITLE('still counting'),
       function(){cur.style.display='none';return Promise.resolve();},
